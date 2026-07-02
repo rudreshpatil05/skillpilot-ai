@@ -3,6 +3,21 @@ from src.parser.file_validator import validate_pdf
 from src.parser.pdf_parser import extract_text_from_pdf
 from src.utils.text_cleaner import clean_resume_text
 from src.utils.resume_stats import get_resume_statistics
+from src.extractor.skill_extractor import (
+    load_skills,
+    extract_skills
+)
+
+skills = load_skills()
+
+# -------------------------------
+# Page Configuration
+# -------------------------------
+st.set_page_config(
+    page_title="SkillPilot AI 2.0",
+    page_icon="🚀",
+    layout="wide"
+)
 
 st.markdown("---")
 
@@ -29,50 +44,82 @@ if uploaded_file is not None:
             st.write(f"**Filename:** {uploaded_file.name}")
 
         with col2:
-            st.write(f"**Size:** {round(uploaded_file.size/1024,2)} KB")
+            st.write(f"**Size:** {round(uploaded_file.size / 1024, 2)} KB")
 
         st.markdown("---")
 
-        st.write("### Extracted Resume Text")
-
+        # ===========================
+        # Extract Resume Text
+        # ===========================
         resume_text = extract_text_from_pdf(uploaded_file)
-
-        cleaned_text = clean_resume_text(resume_text)
-
-        stats = get_resume_statistics(cleaned_text)
 
         if resume_text.startswith("ERROR"):
 
             st.error(resume_text)
 
-        elif resume_text == "":
+        elif resume_text.strip() == "":
 
             st.warning("No text could be extracted from this PDF.")
 
         else:
 
+            # ===========================
+            # Clean Resume Text
+            # ===========================
+            cleaned_text = clean_resume_text(resume_text)
+
+            # ===========================
+            # Resume Statistics
+            # ===========================
+            stats = get_resume_statistics(cleaned_text)
+
+            st.subheader("📊 Resume Statistics")
+
+            col1, col2, col3, col4 = st.columns(4)
+
+            with col1:
+                st.metric("📝 Words", stats["Words"])
+
+            with col2:
+                st.metric("🔤 Characters", stats["Characters"])
+
+            with col3:
+                st.metric("📄 Lines", stats["Lines"])
+
+            with col4:
+                st.metric("⏱ Reading Time", stats["Reading Time"])
+
             st.markdown("---")
+
+            # ===========================
+            # Skill Extraction
+            # ===========================
+            detected_skills = extract_skills(cleaned_text, skills)
+
+            st.subheader("🧠 Detected Skills")
+
+            if detected_skills:
+                for skill in detected_skills:
+                    st.success(skill)
+            else:
+                st.warning("No skills detected.")
+
+            st.markdown("---")
+
+            # ===========================
+            # Resume Preview
+            # ===========================
             st.subheader("📄 Resume Preview")
 
-        with st.expander("View Resume Text", expanded=True):
-             st.text_area(
-                "Extracted Resume",
-                cleaned_text,
-                height=400
+            with st.expander("View Resume Text", expanded=True):
+                st.text_area(
+                    "Extracted Resume",
+                    cleaned_text,
+                    height=400
                 )
 
     else:
-
         st.error(message)
-
-# -------------------------------
-# Page Configuration
-# -------------------------------
-st.set_page_config(
-    page_title="SkillPilot AI 2.0",
-    page_icon="🚀",
-    layout="wide"
-)
 
 # -------------------------------
 # Header
@@ -153,24 +200,6 @@ with col2:
 - RapidFuzz
 - Plotly
     """)
-
-st.markdown("---")
-
-st.subheader("📊 Resume Statistics")
-
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.metric("Characters", stats["Characters"])
-
-with col2:
-    st.metric("Words", stats["Words"])
-
-with col3:
-    st.metric("Lines", stats["Lines"])
-
-with col4:
-    st.metric("Reading Time", stats["Reading Time"])
 
 st.markdown("---")
 
