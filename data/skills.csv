@@ -1,6 +1,4 @@
 Category,Skill
-
-
 Programming Language,Python
 Programming Language,Java
 Programming Language,C
@@ -18,21 +16,18 @@ Programming Language,R
 Programming Language,MATLAB
 Programming Language,Scala
 Programming Language,Dart
-
 Web Development,HTML
 Web Development,CSS
 Web Development,Bootstrap
 Web Development,Tailwind CSS
 Web Development,SASS
 Web Development,Responsive Design
-
 Frontend,React
 Frontend,Next.js
 Frontend,Angular
 Frontend,Vue.js
 Frontend,Redux
 Frontend,jQuery
-
 Backend,Node.js
 Backend,Express.js
 Backend,Django
@@ -41,7 +36,6 @@ Backend,FastAPI
 Backend,Spring Boot
 Backend,Laravel
 Backend,ASP.NET
-
 Database,SQL
 Database,MySQL
 Database,PostgreSQL
@@ -51,14 +45,12 @@ Database,Redis
 Database,Oracle
 Database,Firebase
 Database,Cassandra
-
 Data Analysis,Pandas
 Data Analysis,NumPy
 Data Analysis,Matplotlib
 Data Analysis,Seaborn
 Data Analysis,Plotly
 Data Analysis,OpenCV
-
 Machine Learning,Scikit-learn
 Machine Learning,XGBoost
 Machine Learning,LightGBM
@@ -69,7 +61,6 @@ Machine Learning,Classification
 Machine Learning,Clustering
 Machine Learning,Feature Engineering
 Machine Learning,Model Evaluation
-
 Deep Learning,TensorFlow
 Deep Learning,PyTorch
 Deep Learning,Keras
@@ -78,7 +69,6 @@ Deep Learning,RNN
 Deep Learning,LSTM
 Deep Learning,Transformer
 Deep Learning,GAN
-
 Artificial Intelligence,NLP
 Artificial Intelligence,Computer Vision
 Artificial Intelligence,Generative AI
@@ -92,7 +82,6 @@ Artificial Intelligence,LlamaIndex
 Artificial Intelligence,Hugging Face
 Artificial Intelligence,Vector Database
 Artificial Intelligence,Embeddings
-
 Cloud,AWS
 Cloud,Azure
 Cloud,GCP
@@ -115,26 +104,21 @@ API,FastAPI
 API,GraphQL
 API,Postman
 API,Swagger
-
 Data Engineering,Apache Spark
 Data Engineering,Hadoop
 Data Engineering,Airflow
 Data Engineering,Kafka
 Data Engineering,ETL
-
 Visualization,Power BI
 Visualization,Tableau
 Visualization,Excel
 Visualization,Looker Studio
-
 Version Control,Git
 Version Control,GitHub
-
 Testing,PyTest
 Testing,Unit Testing
 Testing,Integration Testing
 Testing,Selenium
-
 Soft Skills,Communication
 Soft Skills,Leadership
 Soft Skills,Problem Solving
