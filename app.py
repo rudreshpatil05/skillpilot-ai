@@ -12,6 +12,7 @@ from src.analyzer.gap_analyzer import analyze_skill_gap
 from src.analyzer.future_score import calculate_future_score
 from src.analyzer.gap_analyzer import analyze_skill_gap
 import inspect
+from src.visualization.charts import role_match_chart
 
 print("Function:", analyze_skill_gap)
 print("Signature:", inspect.signature(analyze_skill_gap))
@@ -163,6 +164,14 @@ if uploaded_file is not None:
                 st.markdown("---")
 
                 st.subheader("🏆 Top 5 Matching Roles")
+
+                
+                chart = role_match_chart(results)
+
+                st.plotly_chart(
+                    chart,
+                    use_container_width=True
+                )
 
                 for role in results[:5]:
 
