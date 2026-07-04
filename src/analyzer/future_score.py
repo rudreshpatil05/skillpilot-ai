@@ -1,24 +1,3 @@
-def calculate_future_score(current_score, missing_skills):
-    """
-    Predict future score after learning all missing skills.
-    """
-
-    future_score = current_score + (len(missing_skills) * 10)
-
-    if future_score > 100:
-        future_score = 100
-
-    return future_score
-
-
-if __name__ == "__main__":
-    score = calculate_future_score(
-        70,
-        ["Docker", "AWS", "PostgreSQL"]
-    )
-
-    print(score)
-
 def calculate_future_score(best_role):
     """
     Calculates Career Readiness Score.
@@ -45,3 +24,13 @@ def calculate_future_score(best_role):
         "score": score,
         "level": level
     }
+
+
+if __name__ == "__main__":
+
+    sample_role = {
+        "Role": "Data Analyst",
+        "Score": 72
+    }
+
+    print(calculate_future_score(sample_role))
