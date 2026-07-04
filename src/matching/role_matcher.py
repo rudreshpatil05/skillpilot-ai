@@ -1,17 +1,18 @@
 import pandas as pd
 
 
-def load_roles(csv_path="data/roles.csv"):
+def load_roles():
     """
-    Load all job roles from CSV
+    Load all job roles from the CSV file.
     """
-    return pd.read_csv(csv_path)
+    roles = pd.read_csv("data/roles.csv")
+    return roles
 
 
 def match_roles(detected_skills, roles_df):
     """
-    Compare detected resume skills
-    with every job role.
+    Compare detected resume skills with every role
+    and calculate the matching score.
     """
 
     results = []
@@ -24,7 +25,7 @@ def match_roles(detected_skills, roles_df):
 
         required_skills = [
             skill.strip()
-            for skill in row["Skills"].split(",")
+            for skill in row["Required Skills"].split(",")
         ]
 
         required = set(skill.lower() for skill in required_skills)
@@ -33,20 +34,14 @@ def match_roles(detected_skills, roles_df):
 
         missing = required.difference(detected)
 
-        score = round(
-            len(matched) / len(required) * 100
-        )
+        score = round((len(matched) / len(required)) * 100)
 
         results.append({
-
             "Role": role,
-
             "Score": score,
-
             "Matched": sorted(matched),
-
-            "Missing": sorted(missing)
-
+            "Missing": sorted(missing),
+            "Required Skills": required_skills
         })
 
     results.sort(
@@ -56,30 +51,20 @@ def match_roles(detected_skills, roles_df):
 
     return results
 
+
 if __name__ == "__main__":
 
     roles = load_roles()
 
     resume_skills = [
-
         "Python",
-
         "SQL",
-
         "Git",
-
         "Pandas",
-
         "NumPy"
-
     ]
 
-    results = match_roles(
-        resume_skills,
-        roles
-    )
+    results = match_roles(resume_skills, roles)
 
     for role in results:
         print(role)
-
-        

@@ -7,8 +7,17 @@ from src.extractor.skill_extractor import (
     load_skills,
     extract_skills
 )
+from src.matching.role_matcher import load_roles, match_roles
+from src.analyzer.gap_analyzer import analyze_skill_gap
+from src.analyzer.future_score import calculate_future_score
+from src.analyzer.gap_analyzer import analyze_skill_gap
+import inspect
 
+print("Function:", analyze_skill_gap)
+print("Signature:", inspect.signature(analyze_skill_gap))
+print("File:", inspect.getfile(analyze_skill_gap))
 skills = load_skills()
+roles = load_roles()
 
 # -------------------------------
 # Page Configuration
@@ -105,6 +114,7 @@ if uploaded_file is not None:
                 st.warning("No skills detected.")
 
             st.markdown("---")
+            
 
             # ===========================
             # Resume Preview
@@ -118,8 +128,76 @@ if uploaded_file is not None:
                     height=400
                 )
 
-    else:
-        st.error(message)
+    
+
+            # ===========================
+            # Role Matching
+            # ===========================
+
+            results = match_roles(detected_skills, roles)
+
+            if results:
+
+                best_role = results[0]
+
+                st.subheader("🎯 Best Career Match")
+
+                st.success(best_role["Role"])
+
+                st.progress(best_role["Score"] / 100)
+
+                st.metric("Match Score", f"{best_role['Score']}%")
+                career = calculate_future_score(best_role)
+
+                st.subheader("⭐ Career Readiness")
+
+                st.progress(career["score"] / 100)
+
+                st.metric(
+                        "Career Score",
+                        f"{career['score']}/100"
+                    )
+
+                st.success(career["level"])
+                
+                st.markdown("---")
+
+                st.subheader("🏆 Top 5 Matching Roles")
+
+                for role in results[:5]:
+
+                    st.write(
+                        f"**{role['Role']}**  —  {role['Score']}%"
+                    )
+
+            else:
+
+                st.warning("No matching role found.")
+
+            # ===========================
+            # Skill Gap Analysis
+            # ===========================
+
+            missing_skills = analyze_skill_gap(
+                detected_skills,
+                best_role
+            )
+            st.write(best_role)
+
+            st.markdown("---")
+
+            st.subheader("❌ Missing Skills")
+
+            if missing_skills:
+
+                for skill in missing_skills:
+
+                    st.error(skill)
+
+            else:
+
+                st.success("No Missing Skills 🎉")
+
 
 # -------------------------------
 # Header

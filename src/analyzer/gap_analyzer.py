@@ -1,41 +1,17 @@
-def analyze_skill_gap(role_result):
+def analyze_skill_gap(detected_skills, best_role):
     """
-    Analyze missing skills and generate recommendations.
+    Compare detected skills with required skills
+    and return the missing ones.
     """
 
-    missing = role_result["Missing"]
+    required_skills = best_role["Required Skills"]
 
-    recommendations = []
+    detected = {skill.lower() for skill in detected_skills}
 
-    for skill in missing:
+    missing_skills = []
 
-        recommendations.append({
+    for skill in required_skills:
+        if skill.lower() not in detected:
+            missing_skills.append(skill)
 
-            "Skill": skill,
-
-            "Priority": "High",
-
-            "Estimated Days": 7
-
-        })
-
-    return recommendations
-if __name__ == "__main__":
-
-    sample = {
-
-        "Role":"Machine Learning Intern",
-
-        "Missing":[
-
-            "Machine Learning",
-
-            "NumPy",
-
-            "Scikit-learn"
-
-        ]
-
-    }
-
-    print(analyze_skill_gap(sample))
+    return missing_skills
