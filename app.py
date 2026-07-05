@@ -18,6 +18,11 @@ from src.roadmap.roadmap_generator import generate_learning_roadmap
 from src.reviewer.resume_reviewer import review_resume
 from src.reviewer import review_resume
 from src.visualization.charts import role_match_chart
+from src.chatbot import answer_resume_question
+from src.chatbot import answer_resume_question
+
+
+
 
 
 print("Function:", analyze_skill_gap)
@@ -247,18 +252,50 @@ if uploaded_file is not None:
                     st.write(f"• {resource}")
 
                 st.markdown("---")
-            review = review_resume(cleaned_text)
+            # ===========================
+                # ATS Resume Review
+                # ===========================
 
-            st.subheader("⭐ ATS Score")
-            st.metric("ATS Score", f"{review['ATS Score']}/100")
+                review = review_resume(cleaned_text)
 
-            st.subheader("💪 Strengths")
-            for strength in review["Strengths"]:
-                st.success(strength)
+                # Store ATS Score for chatbot
+                ats_score = review["ATS Score"]
+                
+                st.subheader("⭐ ATS Score")
+                st.metric("ATS Score", f"{ats_score}/100")
 
-            st.subheader("💡 Suggestions")
-            for suggestion in review["Suggestions"]:
-                st.warning(suggestion)
+                st.subheader("💪 Strengths")
+
+                for strength in review["Strengths"]:
+                    st.success(strength)
+
+                st.subheader("💡 Suggestions")
+
+                for suggestion in review["Suggestions"]:
+                    st.warning(suggestion)
+            # ===========================
+            # AI Resume Chatbot
+            # ===========================
+
+            st.markdown("---")
+            st.subheader("🤖 AI Resume Assistant")
+
+            question = st.text_input(
+                "Ask a question about your resume"
+            )
+
+            if question:
+
+                answer = answer_resume_question(
+                    question=question,
+                    best_role=best_role,
+                    detected_skills=detected_skills,
+                    missing_skills=missing_skills,
+                    ats_score= ats_score,
+                    career=career
+                )
+
+                st.success(answer)
 
 # -------------------------------
 # Header
