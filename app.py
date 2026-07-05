@@ -1,6 +1,7 @@
 import streamlit as st
 from src.parser.file_validator import validate_pdf
 from src.parser.pdf_parser import extract_text_from_pdf
+from src.reviewer import review_resume
 from src.utils.text_cleaner import clean_resume_text
 from src.utils.resume_stats import get_resume_statistics
 from src.extractor.skill_extractor import (
@@ -13,6 +14,10 @@ from src.analyzer.future_score import calculate_future_score
 from src.analyzer.gap_analyzer import analyze_skill_gap
 import inspect
 from src.visualization.charts import role_match_chart
+from src.roadmap.roadmap_generator import generate_learning_roadmap
+from src.reviewer import review_resume
+
+
 
 print("Function:", analyze_skill_gap)
 print("Signature:", inspect.signature(analyze_skill_gap))
@@ -165,7 +170,7 @@ if uploaded_file is not None:
 
                 st.subheader("🏆 Top 5 Matching Roles")
 
-                
+
                 chart = role_match_chart(results)
 
                 st.plotly_chart(
@@ -206,7 +211,46 @@ if uploaded_file is not None:
             else:
 
                 st.success("No Missing Skills 🎉")
+            st.markdown("---")
 
+           
+
+            # ===========================
+            # Personalized Learning Roadmap
+            # ===========================
+
+            roadmap = generate_learning_roadmap(missing_skills)
+
+            st.markdown("---")
+            st.subheader("🛣 Personalized Learning Roadmap")
+
+            for step in roadmap:
+
+                st.info(f"📅 Week {step['Week']}")
+
+                st.write(f"**Skill:** {step['Skill']}")
+                st.write(f"**Difficulty:** {step['Difficulty']}")
+                st.write(f"**Estimated Days:** {step['Days']}")
+                st.write(f"**Mini Project:** {step['Project']}")
+
+                st.write("### 📚 Resources")
+
+                for resource in step["Resources"]:
+                    st.write(f"• {resource}")
+
+                st.markdown("---")
+            review = review_resume(cleaned_text)
+
+            st.subheader("⭐ ATS Score")
+            st.metric("ATS Score", f"{review['ATS Score']}/100")
+
+            st.subheader("💪 Strengths")
+            for strength in review["Strengths"]:
+                st.success(strength)
+
+            st.subheader("💡 Suggestions")
+            for suggestion in review["Suggestions"]:
+                st.warning(suggestion)
 
 # -------------------------------
 # Header
