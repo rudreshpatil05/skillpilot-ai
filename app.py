@@ -15,8 +15,9 @@ from src.analyzer.gap_analyzer import analyze_skill_gap
 import inspect
 from src.visualization.charts import role_match_chart
 from src.roadmap.roadmap_generator import generate_learning_roadmap
+from src.reviewer.resume_reviewer import review_resume
 from src.reviewer import review_resume
-
+from src.visualization.charts import role_match_chart
 
 
 print("Function:", analyze_skill_gap)
@@ -168,21 +169,18 @@ if uploaded_file is not None:
                 
                 st.markdown("---")
 
-                st.subheader("🏆 Top 5 Matching Roles")
+                st.subheader("🏆 Top  Matching Roles")
 
 
-                chart = role_match_chart(results)
+                fig = role_match_chart(results)
 
                 st.plotly_chart(
-                    chart,
-                    use_container_width=True
+                    fig,
+                    use_container_width=True,
+                     key="role_match_chart"
                 )
 
-                for role in results[:5]:
-
-                    st.write(
-                        f"**{role['Role']}**  —  {role['Score']}%"
-                    )
+                
 
             else:
 
@@ -196,24 +194,34 @@ if uploaded_file is not None:
                 detected_skills,
                 best_role
             )
-            st.write(best_role)
-
             st.markdown("---")
+            st.subheader("📊 Resume Dashboard")
 
-            st.subheader("❌ Missing Skills")
+            col1, col2, col3, col4 = st.columns(4)
 
-            if missing_skills:
+            with col1:
+                st.metric(
+                    "🧠 Skills",
+                    len(detected_skills)
+                )
 
-                for skill in missing_skills:
+            with col2:
+                st.metric(
+                    "❌ Missing",
+                    len(missing_skills)
+                )
 
-                    st.error(skill)
+            with col3:
+                st.metric(
+                    "🎯 Best Role",
+                    best_role["Role"]
+                )
 
-            else:
-
-                st.success("No Missing Skills 🎉")
-            st.markdown("---")
-
-           
+            with col4:
+                st.metric(
+                    "⭐ Career Score",
+                    f"{career['score']}/100"
+                )
 
             # ===========================
             # Personalized Learning Roadmap
