@@ -21,7 +21,7 @@ from src.visualization.charts import role_match_chart
 from src.chatbot import answer_resume_question
 from src.chatbot import answer_resume_question
 from src.reports import generate_pdf_report
-
+from src.dashboard import show_dashboard
 
 
 
@@ -330,6 +330,13 @@ if uploaded_file is not None:
                 )
 
                 st.success(answer)
+            
+            show_dashboard(
+            detected_skills,
+            missing_skills,
+            ats_score,
+            career
+        )
 
 # -------------------------------
 # Header
