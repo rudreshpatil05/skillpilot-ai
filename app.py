@@ -20,7 +20,7 @@ from src.reviewer import review_resume
 from src.visualization.charts import role_match_chart
 from src.chatbot import answer_resume_question
 from src.chatbot import answer_resume_question
-
+from src.reports import generate_pdf_report
 
 
 
@@ -273,6 +273,40 @@ if uploaded_file is not None:
 
                 for suggestion in review["Suggestions"]:
                     st.warning(suggestion)
+            
+            roadmap = generate_learning_roadmap(missing_skills)
+
+            # ===========================
+            # Generate PDF Report
+            # ===========================
+
+            pdf_filename = "SkillPilot_AI_Report.pdf"
+
+            generate_pdf_report(
+                    filename=pdf_filename,
+                    best_role=best_role,
+                    detected_skills=detected_skills,
+                    missing_skills=missing_skills,
+                    ats_score=ats_score,
+                    career=career,
+                    roadmap=roadmap,
+                    review=review
+                )            
+                        # ===========================
+            # Download PDF Report
+            # ===========================
+
+            st.markdown("---")
+            st.subheader("📄 Download Resume Report")
+
+            with open(pdf_filename, "rb") as pdf_file:
+
+                st.download_button(
+                    label="📥 Download SkillPilot AI Report",
+                    data=pdf_file,
+                    file_name="SkillPilot_AI_Report.pdf",
+                    mime="application/pdf"
+                )
             # ===========================
             # AI Resume Chatbot
             # ===========================
