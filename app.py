@@ -22,6 +22,7 @@ from src.chatbot import answer_resume_question
 from src.chatbot import answer_resume_question
 from src.reports import generate_pdf_report
 from src.dashboard import show_dashboard
+from src.ui import setup_sidebar
 
 
 
@@ -39,6 +40,7 @@ st.set_page_config(
     page_icon="🚀",
     layout="wide"
 )
+setup_sidebar()
 
 st.markdown("---")
 
@@ -346,92 +348,62 @@ st.subheader("AI Skill Gap Mapper & Placement Roadmap Generator")
 
 st.markdown("---")
 
-# -------------------------------
-# Welcome Section
-# -------------------------------
-st.header("👋 Welcome")
-
-st.write("""
-SkillPilot AI is an AI-powered platform that helps students analyze their resumes,
-compare them with industry job requirements, identify missing skills,
-and generate personalized learning roadmaps.
-
-Our goal is to improve placement readiness and help students make smarter career decisions.
-""")
-
 st.markdown("---")
 
-# -------------------------------
-# Problem Statement
-# -------------------------------
-st.header("📌 Problem Statement")
+with st.expander("ℹ About SkillPilot AI", expanded=False):
 
-st.write("""
-Many students apply for jobs without knowing whether their skills match industry expectations.
-They often receive rejections without understanding what they need to improve.
+    st.header("👋 Welcome")
 
-SkillPilot AI bridges this gap by providing an intelligent resume analysis system.
-""")
-
-st.markdown("---")
-
-# -------------------------------
-# Features (Coming Soon)
-# -------------------------------
-st.header("🚀 Upcoming Features")
-
-st.markdown("""
-- 📄 Resume Upload
-- 📑 Resume Parsing
-- 🧠 Skill Extraction
-- 🤖 AI-Based Role Matching
-- 📊 Skill Gap Analysis
-- 🛣 Personalized Learning Roadmap
-- 📈 Interactive Dashboard
-""")
-
-st.markdown("---")
-
-# -------------------------------
-# Technology Stack
-# -------------------------------
-st.header("🛠 Technology Stack")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.markdown("""
-### Backend
-- Python
-- Streamlit
-- Pandas
-- NumPy
-- Scikit-learn
+    st.write("""
+    SkillPilot AI is an AI-powered Resume Analyzer that helps students
+    identify missing skills, improve ATS score, discover suitable job
+    roles, and generate personalized learning roadmaps.
     """)
 
-with col2:
+    st.markdown("---")
+
+    st.subheader("🚀 Features")
+
     st.markdown("""
-### AI & NLP
-- spaCy
-- Sentence Transformers
-- RapidFuzz
-- Plotly
+    ✅ Resume Upload
+
+    ✅ Resume Parsing
+
+    ✅ Skill Extraction
+
+    ✅ AI Role Matching
+
+    ✅ ATS Resume Review
+
+    ✅ Career Readiness Score
+
+    ✅ Personalized Learning Roadmap
+
+    ✅ Resume Dashboard
+
+    ✅ AI Resume Chatbot
     """)
 
-st.markdown("---")
+    st.markdown("---")
 
-# -------------------------------
-# Project Status
-# -------------------------------
-st.header("📌 Project Status")
+    st.subheader("🛠 Technology Stack")
 
-st.info("🚧 Version 1.0 (MVP) is currently under development.")
+    st.markdown("""
+    • Python
 
-st.success("Day 1 Progress: Project Setup Completed")
+    • Streamlit
 
-st.markdown("---")
+    • Pandas
 
-# -------------------------------
-# Footer
-# -------------------------------
-st.caption("© 2026 SkillPilot AI | Built with ❤️ using Python & Streamlit")
+    • Scikit-learn
+
+    • Plotly
+
+    • FastAPI (Upcoming)
+
+    • Machine Learning
+    """)
+
+    st.markdown("---")
+
+    st.info("Version 1.0 MVP")
