@@ -3,11 +3,27 @@ import pandas as pd
 
 def load_roles():
     """
-    Load all job roles from the CSV file.
+    Load job roles from CSV.
+    Returns a list of dictionaries.
     """
-    roles = pd.read_csv("data/roles.csv")
-    return roles
 
+    df = pd.read_csv("data/roles.csv")
+
+    roles = []
+
+    for _, row in df.iterrows():
+
+        roles.append(
+            {
+                "Role": row["Role"],
+                "Skills": [
+                    skill.strip()
+                    for skill in str(row["Required Skills"]).split(",")
+                ]
+            }
+        )
+
+    return roles
 
 def match_roles(detected_skills, roles_df):
     """
