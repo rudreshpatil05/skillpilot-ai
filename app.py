@@ -9,26 +9,16 @@ from src.extractor.skill_extractor import (
     extract_skills
 )
 from src.matching.role_matcher import load_roles, match_roles
-from src.analyzer.gap_analyzer import analyze_skill_gap
 from src.analyzer.future_score import calculate_future_score
 from src.analyzer.gap_analyzer import analyze_skill_gap
-import inspect
+from src.reports import generate_pdf_report
 from src.visualization.charts import role_match_chart
 from src.roadmap.roadmap_generator import generate_learning_roadmap
-from src.reviewer.resume_reviewer import review_resume
 from src.reviewer import review_resume
-from src.visualization.charts import role_match_chart
 from src.chatbot import answer_resume_question
-from src.chatbot import answer_resume_question
-from src.reports import generate_pdf_report
-from src.dashboard import show_dashboard
 from src.ui import setup_sidebar
+from src.dashboard import show_dashboard, show_summary
 
-
-
-print("Function:", analyze_skill_gap)
-print("Signature:", inspect.signature(analyze_skill_gap))
-print("File:", inspect.getfile(analyze_skill_gap))
 skills = load_skills()
 roles = load_roles()
 
@@ -142,7 +132,7 @@ if uploaded_file is not None:
                     height=400
                 )
 
-    
+
 
             # ===========================
             # Role Matching
@@ -275,71 +265,96 @@ if uploaded_file is not None:
 
                 for suggestion in review["Suggestions"]:
                     st.warning(suggestion)
-            
-            roadmap = generate_learning_roadmap(missing_skills)
 
-            # ===========================
-            # Generate PDF Report
-            # ===========================
+                # ===========================
+                # PDF Report
+                # ===========================
 
-            pdf_filename = "SkillPilot_AI_Report.pdf"
+                st.markdown("---")
+                st.subheader("📄 Download Resume Report")
 
-            generate_pdf_report(
-                    filename=pdf_filename,
+                try:
+
+                    pdf_filename = "SkillPilot_AI_Report.pdf"
+
+                    generate_pdf_report(
+                        filename=pdf_filename,
+                        best_role=best_role,
+                        detected_skills=detected_skills,
+                        missing_skills=missing_skills,
+                        ats_score=ats_score,
+                        career=career,
+                        roadmap=roadmap,
+                        review=review
+                    )
+
+                    with open(pdf_filename, "rb") as pdf_file:
+
+                        st.download_button(
+                            label="📥 Download SkillPilot AI Report",
+                            data=pdf_file,
+                            file_name="SkillPilot_AI_Report.pdf",
+                            mime="application/pdf"
+                        )
+
+                except (ModuleNotFoundError, NameError):
+
+                    st.info(
+                        "📄 PDF Report is temporarily unavailable.\n"
+                        "Install ReportLab to enable this feature."
+                    )
+
+
+                # ===========================
+                # AI Resume Chatbot
+                # ===========================
+
+                st.markdown("---")
+                st.subheader("🤖 AI Resume Assistant")
+
+                question = st.text_input(
+                    "Ask a question about your resume"
+                )
+
+                if question.strip():
+
+                    answer = answer_resume_question(
+                        question=question,
+                        best_role=best_role,
+                        detected_skills=detected_skills,
+                        missing_skills=missing_skills,
+                        ats_score=ats_score,
+                        career=career
+                    )
+
+                    st.success(answer)
+
+
+                # ===========================
+                # Resume Dashboard
+                # ===========================
+
+                st.markdown("---")
+
+                show_dashboard(
+                    detected_skills=detected_skills,
+                    missing_skills=missing_skills,
+                    ats_score=ats_score,
+                    career=career
+                )
+
+
+                # ===========================
+                # Resume Summary
+                # ===========================
+
+                show_summary(
                     best_role=best_role,
                     detected_skills=detected_skills,
                     missing_skills=missing_skills,
                     ats_score=ats_score,
-                    career=career,
-                    roadmap=roadmap,
-                    review=review
-                )            
-                        # ===========================
-            # Download PDF Report
-            # ===========================
-
-            st.markdown("---")
-            st.subheader("📄 Download Resume Report")
-
-            with open(pdf_filename, "rb") as pdf_file:
-
-                st.download_button(
-                    label="📥 Download SkillPilot AI Report",
-                    data=pdf_file,
-                    file_name="SkillPilot_AI_Report.pdf",
-                    mime="application/pdf"
-                )
-            # ===========================
-            # AI Resume Chatbot
-            # ===========================
-
-            st.markdown("---")
-            st.subheader("🤖 AI Resume Assistant")
-
-            question = st.text_input(
-                "Ask a question about your resume"
-            )
-
-            if question:
-
-                answer = answer_resume_question(
-                    question=question,
-                    best_role=best_role,
-                    detected_skills=detected_skills,
-                    missing_skills=missing_skills,
-                    ats_score= ats_score,
                     career=career
                 )
-
-                st.success(answer)
-            
-            show_dashboard(
-            detected_skills,
-            missing_skills,
-            ats_score,
-            career
-        )
-
 # -------------------------------
 # Header
 # -------------------------------
