@@ -18,6 +18,8 @@ from src.reviewer import review_resume
 from src.chatbot import answer_resume_question
 from src.ui import setup_sidebar
 from src.dashboard import show_dashboard, show_summary
+from src.semantic.semantic_matcher import semantic_role_match
+from src.visualization.semantic_chart import semantic_chart
 
 skills = load_skills()
 roles = load_roles()
@@ -139,11 +141,15 @@ if uploaded_file is not None:
             # ===========================
 
             results = match_roles(detected_skills, roles)
+            resume_text = " ".join(detected_skills)
+            semantic_result = semantic_role_match(resume_text)
 
             if results:
 
                 best_role = results[0]
-
+                # Override keyword prediction with semantic prediction
+                best_role["Role"] = semantic_result["Role"]
+                best_role["Score"] = semantic_result["Score"]
                 st.subheader("🎯 Best Career Match")
 
                 st.success(best_role["Role"])
@@ -169,7 +175,7 @@ if uploaded_file is not None:
                 st.subheader("🏆 Top  Matching Roles")
 
 
-                fig = role_match_chart(results)
+                fig = semantic_chart(results)
 
                 st.plotly_chart(
                     fig,
