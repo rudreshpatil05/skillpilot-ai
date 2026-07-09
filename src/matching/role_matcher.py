@@ -25,7 +25,8 @@ def load_roles():
 
     return roles
 
-def match_roles(detected_skills, roles_df):
+
+def match_roles(detected_skills, roles):
     """
     Compare detected resume skills with every role
     and calculate the matching score.
@@ -33,18 +34,15 @@ def match_roles(detected_skills, roles_df):
 
     results = []
 
-    detected = set(skill.lower() for skill in detected_skills)
+    detected = {skill.lower() for skill in detected_skills}
 
-    for _, row in roles_df.iterrows():
+    for role in roles:
 
-        role = row["Role"]
+        role_name = role["Role"]
 
-        required_skills = [
-            skill.strip()
-            for skill in row["Required Skills"].split(",")
-        ]
+        required_skills = role["Skills"]
 
-        required = set(skill.lower() for skill in required_skills)
+        required = {skill.lower() for skill in required_skills}
 
         matched = detected.intersection(required)
 
@@ -52,13 +50,15 @@ def match_roles(detected_skills, roles_df):
 
         score = round((len(matched) / len(required)) * 100)
 
-        results.append({
-            "Role": role,
-            "Score": score,
-            "Matched": sorted(matched),
-            "Missing": sorted(missing),
-            "Required Skills": required_skills
-        })
+        results.append(
+            {
+                "Role": role_name,
+                "Score": score,
+                "Matched": sorted(matched),
+                "Missing": sorted(missing),
+                "Required Skills": required_skills,
+            }
+        )
 
     results.sort(
         key=lambda x: x["Score"],
