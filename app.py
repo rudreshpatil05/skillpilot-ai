@@ -2,6 +2,7 @@ import streamlit as st
 from src.parser.file_validator import validate_pdf
 from src.parser.pdf_parser import extract_text_from_pdf
 from src.reviewer import review_resume
+from src.semantic.explanation import generate_match_explanation
 from src.utils.text_cleaner import clean_resume_text
 from src.utils.resume_stats import get_resume_statistics
 from src.extractor.skill_extractor import (
@@ -21,6 +22,7 @@ from src.dashboard import show_dashboard, show_summary
 from src.semantic.semantic_matcher import semantic_role_match
 from src.visualization.semantic_chart import semantic_chart
 from src.ui.kpi_cards import kpi_card
+from src.recommendation import recommend_learning
 
 skills = load_skills()
 roles = load_roles()
@@ -157,7 +159,10 @@ if uploaded_file is not None:
 
                 # ⭐ This line was missing
                 career = calculate_future_score(best_role)
-
+                explanation = generate_match_explanation(
+                        best_role,
+                        detected_skills
+                    )
                 st.subheader("🎯 Best Career Match")
 
                 st.success(best_role["Role"])
@@ -181,7 +186,25 @@ if uploaded_file is not None:
                 )
 
                 st.success(career["level"])
-                st.success(career["level"])
+                st.markdown("---")
+
+                st.subheader("🧠 Why this role?")
+
+                st.info(explanation["confidence"])
+
+                st.write("### ✅ Your Strengths")
+
+                for skill in explanation["strengths"]:
+                    st.success(skill)
+
+                st.write("### ❌ Missing Skills")
+
+                for skill in explanation["missing"]:
+                    st.error(skill)
+
+                st.write("### 🚀 Recommendation")
+
+                st.warning(explanation["recommendation"])
                 
                 st.markdown("---")
 
@@ -210,6 +233,7 @@ if uploaded_file is not None:
                 detected_skills,
                 best_role
             )
+
             st.markdown("---")
             st.subheader("📊 Resume Dashboard")
 
@@ -238,7 +262,14 @@ if uploaded_file is not None:
                     "⭐ Career Score",
                     f"{career['score']}/100"
                 )
+            learning = recommend_learning(best_role["Missing"])
+            st.subheader("📚 Recommended Learning")
 
+            for item in learning:
+
+                st.info(
+                    f"**{item['Skill']}** → {item['Recommendation']}"
+                )
             # ===========================
             # Personalized Learning Roadmap
             # ===========================
