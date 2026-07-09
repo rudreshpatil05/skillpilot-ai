@@ -23,6 +23,9 @@ from src.semantic.semantic_matcher import semantic_role_match
 from src.visualization.semantic_chart import semantic_chart
 from src.ui.kpi_cards import kpi_card
 from src.recommendation import recommend_learning
+from src.reviewer import review_resume
+
+
 
 skills = load_skills()
 roles = load_roles()
@@ -70,6 +73,7 @@ if uploaded_file is not None:
         # Extract Resume Text
         # ===========================
         resume_text = extract_text_from_pdf(uploaded_file)
+    
 
         if resume_text.startswith("ERROR"):
 
@@ -113,7 +117,10 @@ if uploaded_file is not None:
             # Skill Extraction
             # ===========================
             detected_skills = extract_skills(cleaned_text, skills)
-
+            review = review_resume(
+            detected_skills,
+            resume_text
+        )
             st.subheader("🧠 Detected Skills")
 
             if detected_skills:
@@ -297,25 +304,21 @@ if uploaded_file is not None:
             # ===========================
                 # ATS Resume Review
                 # ===========================
+            
+            ats_score = review["score"]
 
-                review = review_resume(cleaned_text)
+            st.subheader("⭐ ATS Score")
+            st.metric("ATS Score", f"{ats_score}/100")
 
-                # Store ATS Score for chatbot
-                ats_score = review["ATS Score"]
-                
-                st.subheader("⭐ ATS Score")
-                st.metric("ATS Score", f"{ats_score}/100")
+            st.subheader("💪 Strengths")
+            for strength in review["strengths"]:
+                st.success(strength)
 
-                st.subheader("💪 Strengths")
-
-                for strength in review["Strengths"]:
-                    st.success(strength)
-
-                st.subheader("💡 Suggestions")
-
-                for suggestion in review["Suggestions"]:
-                    st.warning(suggestion)
-
+            st.subheader("💡 Suggestions")
+            for suggestion in review["suggestions"]:
+                st.warning(suggestion)
+                st.write(review)
+                print(review)
                 # ===========================
                 # PDF Report
                 # ===========================
@@ -344,7 +347,8 @@ if uploaded_file is not None:
                             label="📥 Download SkillPilot AI Report",
                             data=pdf_file,
                             file_name="SkillPilot_AI_Report.pdf",
-                            mime="application/pdf"
+                            mime="application/pdf",
+                            key="download_pdf_report"
                         )
 
                 except (ModuleNotFoundError, NameError):

@@ -1,3 +1,4 @@
+from reportlab.lib import styles
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 
@@ -127,6 +128,31 @@ def generate_pdf_report(
     story.append(
         Paragraph("<br/>", styles["Normal"])
     )
+    # ==========================
+    # Resume Strengths
+    # ==========================
+
+    story.append(
+        Paragraph("<b>Resume Strengths</b>", styles["Heading2"])
+    )
+
+    if review["strengths"]:
+
+        for strength in review["strengths"]:
+
+            story.append(
+                Paragraph(f"• {strength}", styles["Normal"])
+            )
+
+    else:
+
+        story.append(
+            Paragraph("No strengths detected.", styles["Normal"])
+        )
+
+    story.append(
+        Paragraph("<br/>", styles["Normal"])
+    )
 
     # ==========================
     # Resume Suggestions
@@ -136,16 +162,23 @@ def generate_pdf_report(
         Paragraph("<b>Resume Suggestions</b>", styles["Heading2"])
     )
 
-    for suggestion in review["Suggestions"]:
+    if review["suggestions"]:
+
+        for suggestion in review["suggestions"]:
+
+            story.append(
+                Paragraph(f"• {suggestion}", styles["Normal"])
+            )
+
+    else:
 
         story.append(
-            Paragraph(f"• {suggestion}", styles["Normal"])
+            Paragraph("No suggestions. Great Resume! 🎉", styles["Normal"])
         )
 
     story.append(
         Paragraph("<br/>", styles["Normal"])
     )
-
     # ==========================
     # Footer
     # ==========================

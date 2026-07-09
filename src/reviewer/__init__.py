@@ -1,1 +1,1 @@
-from .resume_reviewer import review_resume
+from .ai_reviewer import review_resume
