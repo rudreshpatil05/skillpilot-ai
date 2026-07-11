@@ -24,7 +24,7 @@ from src.visualization.semantic_chart import semantic_chart
 from src.ui.kpi_cards import kpi_card
 from src.recommendation import recommend_learning
 from src.reviewer import review_resume
-
+from src.interview.interview_generator import generate_interview_questions
 
 
 skills = load_skills()
@@ -159,6 +159,7 @@ if uploaded_file is not None:
             if results:
 
                 best_role = results[0]
+                interview_questions = generate_interview_questions(best_role["Role"])
 
                 # Override keyword prediction with semantic prediction
                 best_role["Role"] = semantic_result["Role"]
@@ -301,6 +302,24 @@ if uploaded_file is not None:
                     st.write(f"• {resource}")
 
                 st.markdown("---")
+            
+            st.markdown("---")
+            st.subheader("🎤 AI Interview Preparation")
+
+            # Easy Questions
+            st.markdown("### 🟢 Easy Questions")
+            for question in interview_questions["Easy"]:
+                st.info(question)
+
+            # Medium Questions
+            st.markdown("### 🟡 Medium Questions")
+            for question in interview_questions["Medium"]:
+                st.warning(question)
+
+            # Hard Questions
+            st.markdown("### 🔴 Hard Questions")
+            for question in interview_questions["Hard"]:
+                st.error(question)
             # ===========================
                 # ATS Resume Review
                 # ===========================
@@ -317,47 +336,45 @@ if uploaded_file is not None:
             st.subheader("💡 Suggestions")
             for suggestion in review["suggestions"]:
                 st.warning(suggestion)
-                st.write(review)
-                print(review)
-                # ===========================
-                # PDF Report
-                # ===========================
 
-                st.markdown("---")
-                st.subheader("📄 Download Resume Report")
+            # ===========================
+            # PDF Report
+            # ===========================
 
-                try:
+            st.markdown("---")
+            st.subheader("📄 Download Resume Report")
 
-                    pdf_filename = "SkillPilot_AI_Report.pdf"
+            try:
 
-                    generate_pdf_report(
-                        filename=pdf_filename,
-                        best_role=best_role,
-                        detected_skills=detected_skills,
-                        missing_skills=missing_skills,
-                        ats_score=ats_score,
-                        career=career,
-                        roadmap=roadmap,
-                        review=review
+                pdf_filename = "SkillPilot_AI_Report.pdf"
+
+                generate_pdf_report(
+                    filename=pdf_filename,
+                    best_role=best_role,
+                    detected_skills=detected_skills,
+                    missing_skills=missing_skills,
+                    ats_score=ats_score,
+                    career=career,
+                    roadmap=roadmap,
+                    review=review
+                )
+
+                with open(pdf_filename, "rb") as pdf_file:
+
+                    st.download_button(
+                        label="📥 Download SkillPilot AI Report",
+                        data=pdf_file,
+                        file_name="SkillPilot_AI_Report.pdf",
+                        mime="application/pdf",
+                        key="download_pdf_report"
                     )
 
-                    with open(pdf_filename, "rb") as pdf_file:
+            except (ModuleNotFoundError, NameError):
 
-                        st.download_button(
-                            label="📥 Download SkillPilot AI Report",
-                            data=pdf_file,
-                            file_name="SkillPilot_AI_Report.pdf",
-                            mime="application/pdf",
-                            key="download_pdf_report"
-                        )
-
-                except (ModuleNotFoundError, NameError):
-
-                    st.info(
-                        "📄 PDF Report is temporarily unavailable.\n"
-                        "Install ReportLab to enable this feature."
-                    )
-
+                st.info(
+                    "📄 PDF Report is temporarily unavailable.\n"
+                    "Install ReportLab to enable this feature."
+                )
 
                 # ===========================
                 # AI Resume Chatbot
