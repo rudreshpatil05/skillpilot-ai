@@ -25,7 +25,7 @@ from src.ui.kpi_cards import kpi_card
 from src.recommendation import recommend_learning
 from src.reviewer import review_resume
 from src.interview.interview_generator import generate_interview_questions
-
+from src.chatbot.chatbot import ask_chatbot
 
 skills = load_skills()
 roles = load_roles()
@@ -380,25 +380,26 @@ if uploaded_file is not None:
                 # AI Resume Chatbot
                 # ===========================
 
-                st.markdown("---")
-                st.subheader("🤖 AI Resume Assistant")
+            st.markdown("---")
+            st.subheader("🤖 SkillPilot AI Career Assistant")
 
-                question = st.text_input(
-                    "Ask a question about your resume"
-                )
+            user_question = st.text_input(
+                "Ask anything about Resume, AI, Data Science or Career"
+            )
 
-                if question.strip():
+            if st.button("🚀 Ask AI"):
 
-                    answer = answer_resume_question(
-                        question=question,
-                        best_role=best_role,
-                        detected_skills=detected_skills,
-                        missing_skills=missing_skills,
-                        ats_score=ats_score,
-                        career=career
-                    )
+                if user_question:
+
+                    with st.spinner("Thinking..."):
+
+                        answer = ask_chatbot(user_question)
 
                     st.success(answer)
+
+                else:
+
+                    st.warning("Please enter a question.")
 
 
                 # ===========================
