@@ -26,6 +26,9 @@ from src.recommendation import recommend_learning
 from src.reviewer import review_resume
 from src.interview.interview_generator import generate_interview_questions
 from src.chatbot.chatbot import ask_chatbot
+from src.chatbot.prompts import SUGGESTED_QUESTIONS
+
+
 
 skills = load_skills()
 roles = load_roles()
@@ -376,32 +379,70 @@ if uploaded_file is not None:
                     "Install ReportLab to enable this feature."
                 )
 
-                # ===========================
-                # AI Resume Chatbot
-                # ===========================
-
             st.markdown("---")
             st.subheader("🤖 SkillPilot AI Career Assistant")
 
-            user_question = st.text_input(
-                "Ask anything about Resume, AI, Data Science or Career"
+            if "chat_history" not in st.session_state:
+                st.session_state.chat_history = []
+
+            # Suggested Questions
+            st.subheader("💡 Suggested Questions")
+
+            cols = st.columns(2)
+
+            for i, prompt in enumerate(SUGGESTED_QUESTIONS):
+                with cols[i % 2]:
+                    if st.button(prompt, key=f"prompt_{i}"):
+                        st.session_state.selected_question = prompt
+
+            # Text Input
+            default_question = st.session_state.get(
+                "selected_question",
+                ""
             )
 
+            user_question = st.text_input(
+                "Ask anything about Resume, AI, Data Science or Career",
+                value=default_question,
+                key="career_chat_input"
+            )
+
+            # Ask Button
             if st.button("🚀 Ask AI"):
 
                 if user_question:
 
-                    with st.spinner("Thinking..."):
+                    with st.spinner("🤖 Thinking..."):
 
-                        answer = ask_chatbot(user_question)
+                        answer = ask_chatbot(
+                            question=user_question,
+                            best_role=best_role,
+                            detected_skills=detected_skills,
+                            missing_skills=missing_skills,
+                            ats_score=ats_score,
+                            career=career
+                        )
+
+                    st.session_state.chat_history.append({
+                        "user": user_question,
+                        "assistant": answer
+                    })
 
                     st.success(answer)
 
                 else:
-
                     st.warning("Please enter a question.")
+              # ==========================
+                # Chat History
+                # ==========================
 
+            for chat in st.session_state.chat_history:
 
+                with st.chat_message("user"):
+                        st.write(chat["user"])
+
+                with st.chat_message("assistant"):
+                        st.write(chat["assistant"])
                 # ===========================
                 # Resume Dashboard
                 # ===========================
