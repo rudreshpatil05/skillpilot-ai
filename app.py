@@ -27,7 +27,7 @@ from src.reviewer import review_resume
 from src.interview.interview_generator import generate_interview_questions
 from src.chatbot.chatbot import ask_chatbot
 from src.chatbot.prompts import SUGGESTED_QUESTIONS
-
+from src.chatbot.chatbot import ask_chatbot
 
 
 skills = load_skills()
