@@ -28,6 +28,8 @@ from src.interview.interview_generator import generate_interview_questions
 from src.chatbot.chatbot import ask_chatbot
 from src.chatbot.prompts import SUGGESTED_QUESTIONS
 from src.chatbot.chatbot import ask_chatbot
+from src.reports.report_generator import generate_report
+
 
 
 skills = load_skills()
@@ -497,8 +499,36 @@ if uploaded_file is not None:
                                 ats_score=ats_score,
                                 career=career
                             )
-
+                        st.session_state.ai_suggestions = suggestions
                         st.info(suggestions)
+                        st.markdown("---")
+                        st.subheader("📄 Download AI Career Report")
+
+                        if st.button("📄 Generate PDF Report"):
+
+                            ai_suggestions = st.session_state.get(
+                                "ai_suggestions",
+                                "No AI suggestions generated."
+                            )
+
+                            generate_report(
+                                filename="SkillPilot_AI_Report.pdf",
+                                best_role=best_role,
+                                detected_skills=detected_skills,
+                                missing_skills=missing_skills,
+                                ats_score=ats_score,
+                                career=career,
+                                ai_suggestions=ai_suggestions
+                            )
+
+                            with open("SkillPilot_AI_Report.pdf", "rb") as pdf_file:
+
+                                st.download_button(
+                                    label="⬇ Download Report",
+                                    data=pdf_file,
+                                    file_name="SkillPilot_AI_Report.pdf",
+                                    mime="application/pdf"
+                                )
                 # ===========================
                 # Resume Dashboard
                 # ===========================
