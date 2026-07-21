@@ -443,6 +443,62 @@ if uploaded_file is not None:
 
                 with st.chat_message("assistant"):
                         st.write(chat["assistant"])
+                
+                    # ==========================
+                    # AI Resume Improvement Suggestions
+                    # ==========================
+
+                st.markdown("---")
+                st.subheader("💡 AI Resume Improvement Suggestions")
+
+                if st.button("✨ Generate AI Suggestions"):
+
+                    with st.spinner("Analyzing your resume..."):
+
+                        suggestion_prompt = f"""
+                    You are an expert Resume Reviewer.
+
+                    Analyze this resume information.
+
+                    Best Role:
+                {best_role}
+
+                    Detected Skills:
+                {detected_skills}
+
+                    Missing Skills:
+                {missing_skills}
+
+                    ATS Score:
+                {ats_score}
+
+                    Career Readiness:
+                {career}
+
+                    Give professional resume improvement suggestions.
+
+                    Include:
+
+                    1. Resume Improvements
+                    2. ATS Improvements
+                    3. Skills to Learn
+                    4. Projects to Build
+                    5. Certifications
+                    6. Interview Preparation Tips
+
+                    Use bullet points.
+                    """
+
+                        suggestions = ask_chatbot(
+                                question=suggestion_prompt,
+                                best_role=best_role,
+                                detected_skills=detected_skills,
+                                missing_skills=missing_skills,
+                                ats_score=ats_score,
+                                career=career
+                            )
+
+                        st.info(suggestions)
                 # ===========================
                 # Resume Dashboard
                 # ===========================
