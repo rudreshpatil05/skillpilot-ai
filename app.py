@@ -18,7 +18,7 @@ from src.roadmap.roadmap_generator import generate_learning_roadmap
 from src.reviewer import review_resume
 from src.chatbot import answer_resume_question
 from src.ui import setup_sidebar
-from src.dashboard import show_dashboard, show_summary
+from src.dashboard.dashboard import show_dashboard
 from src.semantic.semantic_matcher import semantic_role_match
 from src.visualization.semantic_chart import semantic_chart
 from src.ui.kpi_cards import kpi_card
@@ -29,11 +29,14 @@ from src.chatbot.chatbot import ask_chatbot
 from src.chatbot.prompts import SUGGESTED_QUESTIONS
 from src.chatbot.chatbot import ask_chatbot
 import src.reports.pdf_report as pdf_report
+import inspect
 
-print("=" * 50)
-print("PDF MODULE:", pdf_report.__file__)
-print("AVAILABLE:", dir(pdf_report))
-print("=" * 50)
+print("\n" + "=" * 80)
+print("FUNCTION OBJECT :", show_dashboard)
+print("MODULE          :", show_dashboard.__module__)
+print("SIGNATURE       :", inspect.signature(show_dashboard))
+print("FILE            :", inspect.getfile(show_dashboard))
+print("=" * 80 + "\n")
 
 skills = load_skills()
 roles = load_roles()
@@ -244,40 +247,32 @@ if uploaded_file is not None:
             # ===========================
             # Skill Gap Analysis
             # ===========================
+            resume_text = extract_text_from_pdf(uploaded_file)
+
+            cleaned_text = clean_resume_text(resume_text)
+
+            detected_skills = extract_skills(cleaned_text, skills)
+
+            review = review_resume(
+                detected_skills,
+                resume_text
+            )
 
             missing_skills = analyze_skill_gap(
                 detected_skills,
                 best_role
             )
 
-            st.markdown("---")
-            st.subheader("📊 Resume Dashboard")
+            ats_score = review["score"]
 
-            col1, col2, col3, col4 = st.columns(4)
-
-            with col1:
-                st.metric(
-                    "🧠 Skills",
-                    len(detected_skills)
-                )
-
-            with col2:
-                st.metric(
-                    "❌ Missing",
-                    len(missing_skills)
-                )
-
-            with col3:
-                st.metric(
-                    "🎯 Best Role",
-                    best_role["Role"]
-                )
-
-            with col4:
-                st.metric(
-                    "⭐ Career Score",
-                    f"{career['score']}/100"
-                )
+            show_dashboard(
+                detected_skills=detected_skills,
+                missing_skills=missing_skills,
+                ats_score=ats_score,
+                career=career,
+                best_role=best_role,
+                review=review
+            )
             # ==========================
             # Skills Overview Chart
             # ==========================
@@ -606,11 +601,13 @@ if uploaded_file is not None:
                 st.markdown("---")
 
                 show_dashboard(
-                    detected_skills=detected_skills,
-                    missing_skills=missing_skills,
-                    ats_score=ats_score,
-                    career=career
-                )
+                detected_skills=detected_skills,
+                missing_skills=missing_skills,
+                ats_score=ats_score,
+                career=career,
+                best_role=best_role,
+                review=review
+            )
 
 
                 # ===========================

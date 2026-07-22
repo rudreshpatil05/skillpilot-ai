@@ -1,63 +1,121 @@
 import streamlit as st
+from .charts import (
+    skills_chart,
+    missing_skills_chart
+)
+from .kpi_cards import kpi_card
 
 
 def show_dashboard(
     detected_skills,
     missing_skills,
     ats_score,
-    career
+    career,
+    best_role,
+    review
 ):
     """
-    Displays Resume Dashboard
+    Displays the complete analytics dashboard.
     """
 
     st.markdown("---")
-    st.header("📊 Resume Dashboard")
+    st.header("📊 Resume Analytics Dashboard")
+
+    # ==========================
+    # KPI Cards
+    # ==========================
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        kpi_card(
+            "ATS Score",
+            f"{ats_score}/100",
+            "⭐"
+        )
+
+    with col2:
+        kpi_card(
+            "Career Score",
+            f"{career['score']}/100",
+            "🚀"
+        )
+
+    with col3:
+        kpi_card(
+            "Detected Skills",
+            len(detected_skills),
+            "🧠"
+        )
+
+    with col4:
+        kpi_card(
+            "Missing Skills",
+            len(missing_skills),
+            "❌"
+        )
+
+    st.markdown("---")
+
+    # ==========================
+    # Career Summary
+    # ==========================
+
+    st.subheader("🎯 Career Summary")
+
+    st.success(
+        f"Recommended Role: **{best_role['Role']}**"
+    )
+
+    st.info(
+        f"Career Readiness: **{career['level']}**"
+    )
+
+    st.info(
+        f"Role Match Score: **{best_role['Score']}%**"
+    )
+
+    st.markdown("---")
+
+    # ==========================
+    # Resume Strengths
+    # ==========================
+
+    st.subheader("💪 Resume Strengths")
+
+    if review["strengths"]:
+
+        for strength in review["strengths"]:
+            st.success(strength)
+
+    else:
+
+        st.info("No strengths detected.")
+
+    st.markdown("---")
+
+    # ==========================
+    # Suggestions
+    # ==========================
+
+    st.subheader("💡 Resume Suggestions")
+
+    if review["suggestions"]:
+
+        for suggestion in review["suggestions"]:
+            st.warning(suggestion)
+
+    else:
+
+        st.success("Excellent Resume!")
+    
+    st.markdown("---")
+    st.subheader("📈 Resume Analytics")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.metric(
-            "✅ Detected Skills",
-            len(detected_skills)
-        )
-
-        st.metric(
-            "⭐ ATS Score",
-            ats_score
-        )
+        skills_chart(detected_skills)
 
     with col2:
-        st.metric(
-            "❌ Missing Skills",
-            len(missing_skills)
-        )
-
-        st.metric(
-            "🚀 Career Score",
-            career["score"]
-        )
-
-    st.markdown("---")
-
-    st.subheader("Progress")
-
-    st.write("ATS Score")
-    st.progress(ats_score / 100)
-
-    st.write("Career Readiness")
-    st.progress(career["score"] / 100)
-
-    st.markdown("---")
-
-    st.subheader("Quick Summary")
-
-    st.success("Resume Uploaded")
-
-    st.success("Resume Parsed")
-
-    st.success("Skills Extracted")
-
-    st.success("Role Matched")
-
-    st.success("Roadmap Generated")
+        missing_skills_chart(missing_skills)

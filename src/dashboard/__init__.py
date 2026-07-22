@@ -1,2 +1,3 @@
 from .dashboard import show_dashboard
-from .summary import show_summary
+from .kpi_cards import kpi_card
+from .charts import skills_chart, missing_skills_chart
