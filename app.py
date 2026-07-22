@@ -12,7 +12,7 @@ from src.extractor.skill_extractor import (
 from src.matching.role_matcher import load_roles, match_roles
 from src.analyzer.future_score import calculate_future_score
 from src.analyzer.gap_analyzer import analyze_skill_gap
-from src.reports import generate_pdf_report
+#from src.reports import generate_pdf_report
 from src.visualization.charts import role_match_chart
 from src.roadmap.roadmap_generator import generate_learning_roadmap
 from src.reviewer import review_resume
@@ -28,9 +28,12 @@ from src.interview.interview_generator import generate_interview_questions
 from src.chatbot.chatbot import ask_chatbot
 from src.chatbot.prompts import SUGGESTED_QUESTIONS
 from src.chatbot.chatbot import ask_chatbot
-from src.reports.report_generator import generate_report
+import src.reports.pdf_report as pdf_report
 
-
+print("=" * 50)
+print("PDF MODULE:", pdf_report.__file__)
+print("AVAILABLE:", dir(pdf_report))
+print("=" * 50)
 
 skills = load_skills()
 roles = load_roles()
@@ -275,6 +278,28 @@ if uploaded_file is not None:
                     "⭐ Career Score",
                     f"{career['score']}/100"
                 )
+            # ==========================
+            # Skills Overview Chart
+            # ==========================
+
+            st.subheader("📈 Skills Overview")
+
+            skills_chart_data = {
+                "Category": [
+                    "Detected Skills",
+                    "Missing Skills"
+                ],
+                "Count": [
+                    len(detected_skills),
+                    len(missing_skills)
+                ]
+            }
+
+            st.bar_chart(
+                skills_chart_data,
+                x="Category",
+                y="Count"
+            )
             learning = recommend_learning(best_role["Missing"])
             st.subheader("📚 Recommended Learning")
 
@@ -283,6 +308,39 @@ if uploaded_file is not None:
                 st.info(
                     f"**{item['Skill']}** → {item['Recommendation']}"
                 )
+            # ==========================
+            # Resume Analytics
+            # ==========================
+
+            st.markdown("---")
+            st.subheader("📊 Resume Analytics")
+
+            import pandas as pd
+
+            analytics = pd.DataFrame({
+                "Category": [
+                    "Detected Skills",
+                    "Missing Skills"
+                ],
+                "Count": [
+                    len(detected_skills),
+                    len(missing_skills)
+                ]
+            })
+
+            st.caption("Overall Resume Skill Distribution")
+
+            st.dataframe(
+                analytics,
+                use_container_width=True,
+                hide_index=True
+            )
+
+            st.bar_chart(
+                analytics,
+                x="Category",
+                y="Count"
+            )
             # ===========================
             # Personalized Learning Roadmap
             # ===========================
@@ -333,7 +391,19 @@ if uploaded_file is not None:
 
             st.subheader("⭐ ATS Score")
             st.metric("ATS Score", f"{ats_score}/100")
+            st.progress(ats_score / 100)
 
+            if ats_score >= 85:
+                st.success("Excellent ATS Score 🚀")
+
+            elif ats_score >= 70:
+                st.info("Good ATS Score 👍")
+
+            elif ats_score >= 50:
+                st.warning("Average ATS Score ⚠️")
+
+            else:
+                st.error("Low ATS Score ❌")
             st.subheader("💪 Strengths")
             for strength in review["strengths"]:
                 st.success(strength)
@@ -353,7 +423,7 @@ if uploaded_file is not None:
 
                 pdf_filename = "SkillPilot_AI_Report.pdf"
 
-                generate_pdf_report(
+                pdf_report.generate_pdf_report(
                     filename=pdf_filename,
                     best_role=best_role,
                     detected_skills=detected_skills,

@@ -1,14 +1,20 @@
-import os
+from pathlib import Path
 from dotenv import load_dotenv
+import os
+
+# Load .env from project root
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+
+api_key = os.getenv("GROQ_API_KEY")
+
+print("GROQ_API_KEY loaded:", api_key is not None)
+
+if not api_key:
+    raise ValueError("GROQ_API_KEY not found. Check your .env file.")
+
 from groq import Groq
 
-load_dotenv()
-
-client = Groq(
-    api_key=os.getenv("GROQ_API_KEY")
-)
-
-
+client = Groq(api_key=api_key)
 def ask_chatbot(
     question,
     best_role=None,

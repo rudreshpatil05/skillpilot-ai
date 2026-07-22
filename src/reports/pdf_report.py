@@ -1,56 +1,257 @@
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import SimpleDocTemplate, Paragraph
-from datetime import datetime
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.colors import HexColor
+from reportlab.pdfbase import pdfmetrics
+from reportlab.lib.units import inch
 
 
-def generate_report(
+def generate_pdf_report(
     filename,
     best_role,
     detected_skills,
     missing_skills,
     ats_score,
     career,
-    ai_suggestions
+    roadmap,
+    review,
 ):
+    """
+    Generate SkillPilot AI Resume Analysis Report
 
-    styles = getSampleStyleSheet()
+    Parameters
+    ----------
+    filename : str
+        Output PDF filename.
+
+    best_role : dict
+        Example:
+        {
+            "Role": "Machine Learning Engineer",
+            "Score": 91
+        }
+
+    detected_skills : list
+
+    missing_skills : list
+
+    ats_score : int
+
+    career : dict
+        Example:
+        {
+            "level": "Intermediate",
+            "score": 82
+        }
+
+    roadmap : list
+
+    review : dict
+    """
 
     doc = SimpleDocTemplate(filename)
 
+    styles = getSampleStyleSheet()
+
+    title_style = styles["Title"]
+    title_style.alignment = TA_CENTER
+    title_style.textColor = HexColor("#1F4E79")
+
+    heading = styles["Heading2"]
+    heading.textColor = HexColor("#1F4E79")
+
+    normal = styles["BodyText"]
+
     story = []
 
-    story.append(Paragraph("<b><font size=18>SkillPilot AI Career Report</font></b>", styles["Title"]))
+    # ==================================================
+    # Title
+    # ==================================================
 
-    story.append(Paragraph("<br/>", styles["Normal"]))
+    story.append(Paragraph("SkillPilot AI Resume Analysis Report", title_style))
+    story.append(Spacer(1, 0.25 * inch))
 
-    story.append(Paragraph(f"<b>Generated:</b> {datetime.now().strftime('%d-%m-%Y %H:%M')}", styles["Normal"]))
+    # ==================================================
+    # Career Summary
+    # ==================================================
 
-    story.append(Paragraph("<br/>", styles["Normal"]))
+    story.append(Paragraph("Career Summary", heading))
 
-    story.append(Paragraph(f"<b>Best Role:</b> {best_role}", styles["Heading2"]))
+    role = best_role.get("Role", "Not Available")
+    score = best_role.get("Score", 0)
 
-    story.append(Paragraph(f"<b>ATS Score:</b> {ats_score}%", styles["Heading2"]))
+    story.append(Paragraph(f"<b>Recommended Role:</b> {role}", normal))
+    story.append(Paragraph(f"<b>Role Match:</b> {score}%", normal))
+    story.append(Paragraph(f"<b>ATS Score:</b> {ats_score}/100", normal))
 
-    story.append(Paragraph(f"<b>Career Readiness:</b> {career}", styles["Heading2"]))
+    career_level = career.get("level", "Unknown")
+    career_score = career.get("score", 0)
 
-    story.append(Paragraph("<br/>", styles["Normal"]))
+    story.append(
+        Paragraph(
+            f"<b>Career Readiness:</b> {career_level} ({career_score}/100)",
+            normal,
+        )
+    )
 
-    story.append(Paragraph("<b>Detected Skills</b>", styles["Heading2"]))
+    story.append(Spacer(1, 0.25 * inch))
 
-    for skill in detected_skills:
-        story.append(Paragraph(f"• {skill}", styles["Normal"]))
+    # ==================================================
+    # Detected Skills
+    # ==================================================
 
-    story.append(Paragraph("<br/>", styles["Normal"]))
+    story.append(Paragraph("Detected Skills", heading))
 
-    story.append(Paragraph("<b>Missing Skills</b>", styles["Heading2"]))
+    if detected_skills:
 
-    for skill in missing_skills:
-        story.append(Paragraph(f"• {skill}", styles["Normal"]))
+        for skill in detected_skills:
+            story.append(Paragraph(f"• {skill}", normal))
 
-    story.append(Paragraph("<br/>", styles["Normal"]))
+    else:
+        story.append(Paragraph("No skills detected.", normal))
 
-    story.append(Paragraph("<b>AI Resume Suggestions</b>", styles["Heading2"]))
+    story.append(Spacer(1, 0.25 * inch))
 
-    story.append(Paragraph(ai_suggestions.replace("\n", "<br/>"), styles["Normal"]))
+    # ==================================================
+    # Missing Skills
+    # ==================================================
+
+    story.append(Paragraph("Missing Skills", heading))
+
+    if missing_skills:
+
+        for skill in missing_skills:
+            story.append(Paragraph(f"• {skill}", normal))
+
+    else:
+        story.append(
+            Paragraph("Excellent! No major missing skills found.", normal)
+        )
+
+    story.append(Spacer(1, 0.25 * inch))
+
+    # ==================================================
+    # Learning Roadmap
+    # ==================================================
+
+    story.append(Paragraph("Personalized Learning Roadmap", heading))
+
+    if roadmap:
+
+        for item in roadmap:
+
+            week = item.get("Week", "-")
+            skill = item.get("Skill", "-")
+            difficulty = item.get("Difficulty", "-")
+            days = item.get("Days", "-")
+            project = item.get("Project", "-")
+
+            story.append(
+                Paragraph(
+                    f"<b>Week {week}</b>",
+                    normal,
+                )
+            )
+
+            story.append(
+                Paragraph(f"Skill : {skill}", normal)
+            )
+
+            story.append(
+                Paragraph(f"Difficulty : {difficulty}", normal)
+            )
+
+            story.append(
+                Paragraph(f"Estimated Days : {days}", normal)
+            )
+
+            story.append(
+                Paragraph(f"Mini Project : {project}", normal)
+            )
+
+            resources = item.get("Resources", [])
+
+            if resources:
+
+                story.append(
+                    Paragraph("<b>Resources</b>", normal)
+                )
+
+                for resource in resources:
+                    story.append(
+                        Paragraph(f"• {resource}", normal)
+                    )
+
+            story.append(Spacer(1, 0.15 * inch))
+
+    else:
+
+        story.append(
+            Paragraph("Roadmap unavailable.", normal)
+        )
+
+    story.append(Spacer(1, 0.25 * inch))
+
+    # ==================================================
+    # Resume Strengths
+    # ==================================================
+
+    story.append(Paragraph("Resume Strengths", heading))
+
+    strengths = review.get("strengths", [])
+
+    if strengths:
+
+        for strength in strengths:
+            story.append(
+                Paragraph(f"• {strength}", normal)
+            )
+
+    else:
+        story.append(
+            Paragraph("No strengths detected.", normal)
+        )
+
+    story.append(Spacer(1, 0.25 * inch))
+
+    # ==================================================
+    # Resume Suggestions
+    # ==================================================
+
+    story.append(Paragraph("Resume Improvement Suggestions", heading))
+
+    suggestions = review.get("suggestions", [])
+
+    if suggestions:
+
+        for suggestion in suggestions:
+            story.append(
+                Paragraph(f"• {suggestion}", normal)
+            )
+
+    else:
+        story.append(
+            Paragraph("Great Resume! No major improvements required.", normal)
+        )
+
+    story.append(Spacer(1, 0.30 * inch))
+
+    # ==================================================
+    # Footer
+    # ==================================================
+
+    story.append(
+        Paragraph(
+            "<b>Generated by SkillPilot AI</b>",
+            styles["Heading3"],
+        )
+    )
+
+    story.append(
+        Paragraph(
+            "AI Resume Screening • Skill Gap Analysis • Career Roadmap • ATS Evaluation",
+            normal,
+        )
+    )
 
     doc.build(story)
