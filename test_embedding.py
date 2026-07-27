@@ -4,15 +4,12 @@ text = """
 Python
 Machine Learning
 SQL
-FastAPI
-Git
+Pandas
+Scikit-learn
 """
 
 embedding = get_embedding(text)
 
-print("=" * 50)
-print("Embedding Generated Successfully")
-print("=" * 50)
-print("Embedding Dimension:", len(embedding))
-print("\nFirst 10 Values:\n")
+print(type(embedding))
+print(embedding.shape)
 print(embedding[:10])

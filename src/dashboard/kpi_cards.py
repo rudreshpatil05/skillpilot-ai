@@ -1,34 +1,36 @@
 import streamlit as st
 
+def kpi_card(title, value, icon):
 
-def kpi_card(title, value, emoji="📊"):
-    """
-    Displays a reusable KPI card.
-    """
+    html = f"""
+    <div style="
+        background: linear-gradient(135deg,#1e293b,#0f172a);
+        border-radius:15px;
+        padding:25px;
+        text-align:center;
+        border:1px solid #334155;
+        box-shadow:0 6px 15px rgba(0,0,0,0.3);
+        margin-bottom:10px;
+    ">
 
-    st.markdown(
-        f"""
         <div style="
-            background-color:#1E293B;
-            padding:18px;
-            border-radius:12px;
-            border:1px solid #334155;
-            text-align:center;
-            box-shadow:0px 4px 12px rgba(0,0,0,0.2);
+            font-size:18px;
+            color:white;
+            font-weight:bold;
         ">
-
-            <h3 style="margin-bottom:8px;">
-                {emoji} {title}
-            </h3>
-
-            <h1 style="
-                color:#22C55E;
-                margin-top:0;
-            ">
-                {value}
-            </h1>
-
+            {icon} {title}
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+
+        <div style="
+            font-size:34px;
+            color:#38bdf8;
+            font-weight:700;
+            margin-top:15px;
+        ">
+            {value}
+        </div>
+
+    </div>
+    """
+
+    st.markdown(html, unsafe_allow_html=True)

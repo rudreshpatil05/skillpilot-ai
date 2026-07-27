@@ -15,6 +15,12 @@ if not api_key:
 from groq import Groq
 
 client = Groq(api_key=api_key)
+
+print("=" * 80)
+print("🚀 ask_chatbot() CALLED")
+#print("Question:", question)
+print("=" * 80)
+
 def ask_chatbot(
     question,
     best_role=None,

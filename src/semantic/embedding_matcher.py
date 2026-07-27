@@ -5,12 +5,19 @@ from sklearn.metrics.pairwise import cosine_similarity
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 
+def get_embedding(text):
+    """
+    Returns the embedding vector for a given text.
+    """
+    return model.encode(text)
+
+
 def semantic_role_match(resume_text, roles):
     """
     Compare resume with all role descriptions using embeddings.
     """
 
-    resume_embedding = model.encode(resume_text)
+    resume_embedding = get_embedding(resume_text)
 
     results = []
 
@@ -21,7 +28,7 @@ def semantic_role_match(resume_text, roles):
             role.get("Skills", "")
         )
 
-        role_embedding = model.encode(role_text)
+        role_embedding = get_embedding(role_text)
 
         score = cosine_similarity(
             [resume_embedding],
