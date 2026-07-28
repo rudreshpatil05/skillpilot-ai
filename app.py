@@ -29,23 +29,6 @@ from src.chatbot.chatbot import ask_chatbot
 from src.chatbot.prompts import SUGGESTED_QUESTIONS
 from src.chatbot.chatbot import ask_chatbot
 import src.reports.pdf_report as pdf_report
-import inspect
-
-import streamlit as st
-
-st.title("MAIN APP")
-
-st.success("App started")
-
-st.write("Step 1")
-
-import time
-
-time.sleep(1)
-
-st.write("Step 2")
-
-st.write("Everything works")
 
 skills = load_skills()
 roles = load_roles()

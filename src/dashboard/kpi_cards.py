@@ -1,36 +1,14 @@
 import streamlit as st
 
 def kpi_card(title, value, icon):
+    st.success("✅ kpi_card is executing")
 
-    html = f"""
-    <div style="
-        background: linear-gradient(135deg,#1e293b,#0f172a);
-        border-radius:15px;
-        padding:25px;
-        text-align:center;
-        border:1px solid #334155;
-        box-shadow:0 6px 15px rgba(0,0,0,0.3);
-        margin-bottom:10px;
-    ">
-
-        <div style="
-            font-size:18px;
-            color:white;
-            font-weight:bold;
-        ">
-            {icon} {title}
+    st.markdown(
+        f"""
+        <div style="background:#1e293b;padding:20px;border-radius:10px;">
+            <h3 style="color:white;">{icon} {title}</h3>
+            <h1 style="color:#38bdf8;">{value}</h1>
         </div>
-
-        <div style="
-            font-size:34px;
-            color:#38bdf8;
-            font-weight:700;
-            margin-top:15px;
-        ">
-            {value}
-        </div>
-
-    </div>
-    """
-
-    st.markdown(html, unsafe_allow_html=True)
+        """,
+        unsafe_allow_html=True,
+    )
